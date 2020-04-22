@@ -1,19 +1,23 @@
 import React, {useRef, useEffect} from 'react';
-import { KeyboardAvoidingView, Animated, Text, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, Animated, Text, TextInput, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
 import Logo from './assets/images/logo.svg';
+import globalStyles from './styles';
 
 export default function App() {
-  const slideAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+  const slideAnim = useRef(new Animated.Value(100)).current  // Initial value for opacity: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+  const animParams = {duration: 1000, delay: 2500, useNativeDriver: true}
 
   React.useEffect(() => {
-    Animated.timing(
-      slideAnim,
-      {
-        toValue: -100,
-        duration: 1000,
-        delay: 2000
-      }
-    ).start();
+    Animated.timing(slideAnim, {
+        toValue: -30,
+        ...animParams,
+    }).start();
+
+    Animated.timing(fadeAnim, {
+        toValue: 1,
+        ...animParams
+    }).start();
   }, [])
 
   return (
@@ -21,8 +25,38 @@ export default function App() {
       <Animated.View
         style={{transform: [{ translateY: slideAnim }]}}
       >
-        <Logo>
-        </Logo>
+        <Logo/>
+        <Animated.View style={{opacity: fadeAnim}}>
+            <TextInput
+                underlineColorAndroid="transparent"
+                placeholder = 'Email'
+                placeholderTextColor = '#fff'
+                style = {[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
+                maxLength = {40}
+                keyboardType = 'email-address'
+                autoCapitalize = 'none'
+                autoCorrect = {false}
+                returnKeyType = 'next'
+            />
+            <TextInput
+                underlineColorAndroid="transparent"
+                secureTextEntry
+                placeholder = 'Password'
+                placeholderTextColor = '#fff'
+                style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
+                maxLength = {40}
+                returnKeyType = 'go'
+            />
+            <TouchableHighlight
+                style = {[styles.login, globalStyles.greenButton]}
+                underlayColor = {'hsl(56, 45%, 55%)'}
+            >
+                <Text style={styles.whiteText}>Login</Text>
+            </TouchableHighlight>
+            <TouchableOpacity activeOpacity={0.6}>
+                <Text style={styles.link}>Create an account</Text>
+            </TouchableOpacity>
+        </Animated.View>
       </Animated.View>
     </KeyboardAvoidingView>
   );
@@ -38,5 +72,15 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 300
-    }
+    },
+    login: {
+        width: 300,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)'
+    },
+    link: {
+        fontSize: 14,
+        color: '#fff',
+        textAlign: 'center',
+        marginTop: 8
+    },
 });
