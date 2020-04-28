@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import { KeyboardAvoidingView, View, Animated, Text, TextInput, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -14,11 +14,12 @@ export default function Login() {
    GoogleSignin.configure({
      webClientId: '446696784601-mjsfh7q4c5su56op12qouvqcerooodof.apps.googleusercontent.com', // From Firebase Console Settings
    });
-
-   const slideAnim = useRef(new Animated.Value(200)).current  // Initial value for opacity: 0
-   const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
-   const animParams = {duration: 1000, delay: 1500, useNativeDriver: true}
-   const navigation = useNavigation();
+   const [email, setEmail]=useState('');
+   const [pword, setPword]=useState('');
+   const slideAnim=useRef(new Animated.Value(200)).current  // Initial value for opacity: 0
+   const fadeAnim=useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+   const animParams={duration: 1000, delay: 1500, useNativeDriver: true}
+   const navigation=useNavigation();
 
    React.useEffect(() => {
       Animated.timing(slideAnim, {
@@ -32,12 +33,12 @@ export default function Login() {
       }).start();
    }, [])
 
-    async function onGoogleButtonPress() {
+   async function onGoogleButtonPress() {
       // Get the users ID token
-      const { idToken } = await GoogleSignin.signIn();
+      const { idToken }=await GoogleSignin.signIn();
 
       // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const googleCredential=auth.GoogleAuthProvider.credential(idToken);
 
       // Sign-in the user with the credential
       return auth().signInWithCredential(googleCredential);
@@ -59,7 +60,7 @@ export default function Login() {
       }
 
       // Create a Firebase credential with the AccessToken
-      const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+      const facebookCredential=auth.FacebookAuthProvider.credential(data.accessToken);
 
       // Sign-in the user with the credential
       return auth().signInWithCredential(facebookCredential);
@@ -72,27 +73,30 @@ export default function Login() {
             <Animated.View style={{opacity: fadeAnim}}>
                 <TextInput
                     underlineColorAndroid="transparent"
-                    placeholder = 'Email'
-                    placeholderTextColor = '#fff'
-                    style = {[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
-                    maxLength = {40}
-                    keyboardType = 'email-address'
-                    autoCapitalize = 'none'
-                    autoCorrect = {false}
-                    returnKeyType = 'next'
+                    placeholder='Email'
+                    placeholderTextColor='#fff'
+                    style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
+                    maxLength={40}
+                    keyboardType='email-address'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    returnKeyType='next'
+                    onChangeText={setEmail}
                 />
                 <TextInput
                     underlineColorAndroid="transparent"
-                    secureTextEntry
-                    placeholder = 'Password'
-                    placeholderTextColor = '#fff'
+                    secureTextEntry={true}
+                    placeholder='Password'
+                    placeholderTextColor='#fff'
                     style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
-                    maxLength = {40}
-                    returnKeyType = 'go'
+                    maxLength={40}
+                    returnKeyType='go'
+                    onChangeText={setPword}
                 />
                 <TouchableHighlight
-                    style = {[styles.login, globalStyles.greenButton]}
-                    underlayColor = {'hsl(56, 45%, 55%)'}
+                    style={[styles.login, globalStyles.greenButton]}
+                    underlayColor={'hsl(56, 45%, 55%)'}
+                    onPress={() => auth().signInWithEmailAndPassword(email, pword)}
                 >
                     <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Login</Text>
                 </TouchableHighlight>

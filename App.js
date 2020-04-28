@@ -15,7 +15,6 @@ export default function App() {
 
    function onAuthStateChanged(user) {
       setUser(user);
-      console.log("WE HAVE A USER");
       if (initializing) setInitializing(false);
    }
 
@@ -35,6 +34,7 @@ export default function App() {
    // }
 
    function HomeScreen() {
+      debugger
       if (!user)
          return <Login/>
       else
@@ -45,7 +45,7 @@ export default function App() {
 
    return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName="Home" headerMode={!user ? 'none' : 'screen'}>
+         <Stack.Navigator initialRouteName="Home" headerMode='none'>
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Signup" component={Signup} />
          </Stack.Navigator>
