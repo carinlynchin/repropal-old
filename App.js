@@ -14,8 +14,8 @@ export default function App() {
    const Stack = createStackNavigator();
 
    function onAuthStateChanged(user) {
-      debugger
       setUser(user);
+      console.log("WE HAVE A USER");
       if (initializing) setInitializing(false);
    }
 

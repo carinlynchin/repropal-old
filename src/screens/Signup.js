@@ -1,74 +1,112 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, TextInput, Text, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 import Logo from 'assets/images/logo.svg';
 import globalStyles from 'styles';
 
 export default function Signup() {
-   async function EmailPasswordSignin() {
+   const navigation = useNavigation();
+   const [email, setEmail] = useState('');
+   const [pword, setPword] = useState('');
+   const [pwordValidated, setPwordValidated] = useState(true);
+   const [emailErr, setEmailErr] = useState('');
+   const [samePword, setSamePword] = useState(true);
+
+   const validatePassword = () => setPwordValidated(pword.length >= 6 ? true : false);
+   const isSamePword = () => setSamePword(samePword == pword ? true : false);
+
+   let pwordErr = 'Passwords need to be at minimum 6 characters.'
+
+   async function EmailPasswordSignin(args) {
       auth()
-         .createUserWithEmailAndPassword('sarah.lane@gmail.com', 'SuperSecretPassword!')
+         .createUserWithEmailAndPassword(email, pword)
          .then(() => {
             console.log('User account created & signed in!');
+            navigation.navigate('Home');
          })
          .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
-               console.log('That email address is already in use!');
+               setEmailErr('That email address is already in use!');
             }
-            if (error.code === 'auth/invalid-email') {
-               console.log('That email address is invalid!');
+            else if (error.code === 'auth/invalid-email') {
+               setEmailErr('That email address is invalid!');
             }
-          console.error(error);
-       });
+            else
+               setEmailErr(error);
+         });
     }
+
+    let isValid = () => samePword && pwordValidated && email.length > 0
 
     return (
       <View style={styles.container}>
          <Logo/>
          <TextInput
             underlineColorAndroid="transparent"
-            placeholder = 'First Name'
-            placeholderTextColor = '#fff'
+            placeholder='First Name'
+            placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
-            returnKeyType = 'next'
+            returnKeyType='next'
          />
          <TextInput
             underlineColorAndroid="transparent"
-            placeholder = 'Last Name'
-            placeholderTextColor = '#fff'
+            placeholder='Last Name'
+            placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
-            returnKeyType = 'next'
+            returnKeyType='next'
          />
          <TextInput
             underlineColorAndroid="transparent"
-            placeholder = 'Email Address'
-            placeholderTextColor = '#fff'
+            placeholder='Email Address'
+            placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
-            returnKeyType = 'next'
+            returnKeyType='next'
+            onChangeText={setEmail}
          />
+         { emailErr != '' &&
+            <Text style={globalStyles.formError}>
+               {emailErr}
+            </Text>
+         }
          <TextInput
             underlineColorAndroid="transparent"
-            placeholder = 'Password'
-            placeholderTextColor = '#fff'
+            placeholder='Password'
+            secureTextEntry={true}
+            placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
-            returnKeyType = 'next'
+            returnKeyType='next'
+            onChangeText={setPword}
+            onBlur={validatePassword}
          />
+         { !pwordValidated &&
+            <Text style={globalStyles.formError}>
+               {pwordErr}
+            </Text>
+         }
          <TextInput
             underlineColorAndroid="transparent"
             placeholder = 'Confirm Password'
+            secureTextEntry={true}
             placeholderTextColor = '#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType = 'next'
+            onChangeText={setSamePword}
+            onBlur={isSamePword}
          />
+         { !samePword &&
+            <Text style={globalStyles.formError}>
+               Passwords don't match.
+            </Text>
+         }
          <TouchableHighlight
-           style = {[styles.login, globalStyles.greenButton]}
-           underlayColor = {'hsl(56, 45%, 55%)'}
+            style = {[styles.login, globalStyles.greenButton, !isValid() && globalStyles.disabled]}
+            underlayColor = {'hsl(56, 45%, 55%)'}
+            onPress={() => EmailPasswordSignin()}
+            disabled= {!isValid()}
          >
-            <Text style={styles.whiteText}>Signup</Text>
+            <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Signup</Text>
          </TouchableHighlight>
-         <TouchableOpacity activeOpacity={0.6}>
-            <Text style={styles.link}>Already have an account ? <Text style={styles.linkText}>Login</Text></Text>
-         </TouchableOpacity>
       </View>
     );
 }

@@ -44,5 +44,12 @@ export default StyleSheet.create({
    },
    icon: {
       marginHorizontal: 15,
+   },
+   formError: {
+      color: '#c60909',
+      marginBottom: 10,
+   },
+   disabled: {
+      opacity: 0.4,
    }
 });
