@@ -7,22 +7,38 @@ import globalStyles from 'styles';
 
 export default function Signup() {
    const navigation = useNavigation();
-   const [email, setEmail] = useState('');
-   const [pword, setPword] = useState('');
-   const [pwordValidated, setPwordValidated] = useState(true);
-   const [emailErr, setEmailErr] = useState('');
-   const [samePword, setSamePword] = useState(true);
+   const [form, setForm] = useState({
+      firstName: '',
+      lastName: '',
+      email: '',
+      emailErr: '',
+      pword: '',
+      pwordErr: '',
+      confirmPwrod: '',
+      confirmErr: '',
+   })
 
-   const validatePassword = () => setPwordValidated(pword.length >= 6 ? true : false);
-   const isSamePword = () => setSamePword(samePword == pword ? true : false);
+   const validatePassword = () => setForm({...form, pwordErr: form.pword.length < 6 ? 'Passwords need to be at minimum 6 characters.' : ''})//setPwordValidated(pword.length >= 6 ? true : false);
+   const isSamePword = () => setForm({...form, confirmErr: form.confirmPword != form.pword ? 'Passwords don\'t match' : ''})//setSamePword(samePword == pword ? true : false);
+   const checkEmail = () => setForm({...form, emailErr: form.email.length == 0 ? 'Email is required' : ''});
+   const isFormValid = () => form.emailErr == '' && form.pwordErr == '' && form.confirmErr == '';
 
-   let pwordErr = 'Passwords need to be at minimum 6 characters.'
+   const updateField = (value, name) => {
+      setForm ({
+         ...form,
+         [name]: value
+      });
+   };
 
    async function EmailPasswordSignin(args) {
+      debugger
       auth()
          .createUserWithEmailAndPassword(email, pword)
          .then(() => {
-            console.log('User account created & signed in!');
+            let meta = {
+               'creationTime': Date.now(),
+               //'displayName':
+            }
             navigation.navigate('Home');
          })
          .catch(error => {
@@ -37,8 +53,6 @@ export default function Signup() {
          });
     }
 
-    let isValid = () => samePword && pwordValidated && email.length > 0
-
     return (
       <View style={styles.container}>
          <Logo/>
@@ -48,6 +62,7 @@ export default function Signup() {
             placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType='next'
+            onChangeText={e => updateField(e, 'firstName')}
          />
          <TextInput
             underlineColorAndroid="transparent"
@@ -55,6 +70,7 @@ export default function Signup() {
             placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType='next'
+            onChangeText={e => updateField(e, 'lastName')}
          />
          <TextInput
             underlineColorAndroid="transparent"
@@ -62,11 +78,12 @@ export default function Signup() {
             placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType='next'
-            onChangeText={setEmail}
+            onChangeText={e => updateField(e, 'email')}
+            onBlur={checkEmail}
          />
-         { emailErr != '' &&
+         { form.emailErr != '' &&
             <Text style={globalStyles.formError}>
-               {emailErr}
+               {form.emailErr}
             </Text>
          }
          <TextInput
@@ -76,12 +93,12 @@ export default function Signup() {
             placeholderTextColor='#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType='next'
-            onChangeText={setPword}
+            onChangeText={e => updateField(e, 'pword')}
             onBlur={validatePassword}
          />
-         { !pwordValidated &&
+         { form.pwordErr != '' &&
             <Text style={globalStyles.formError}>
-               {pwordErr}
+               {form.pwordErr}
             </Text>
          }
          <TextInput
@@ -91,19 +108,19 @@ export default function Signup() {
             placeholderTextColor = '#fff'
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType = 'next'
-            onChangeText={setSamePword}
+            onChangeText={e => updateField(e, 'confirmPword')}
             onBlur={isSamePword}
          />
-         { !samePword &&
+         { form.confirmErr != '' &&
             <Text style={globalStyles.formError}>
-               Passwords don't match.
+               {form.confirmErr}
             </Text>
          }
          <TouchableHighlight
-            style = {[styles.login, globalStyles.greenButton, !isValid() && globalStyles.disabled]}
+            style = {[styles.login, globalStyles.greenButton, !isFormValid() && globalStyles.disabled]}
             underlayColor = {'hsl(56, 45%, 55%)'}
             onPress={() => EmailPasswordSignin()}
-            disabled= {!isValid()}
+            disabled= {!isFormValid()}
          >
             <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Signup</Text>
          </TouchableHighlight>
