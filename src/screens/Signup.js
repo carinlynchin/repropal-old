@@ -18,8 +18,8 @@ export default function Signup() {
       confirmErr: '',
    })
 
-   const validatePassword = () => setForm({...form, pwordErr: form.pword.length < 6 ? 'Passwords need to be at minimum 6 characters.' : ''})//setPwordValidated(pword.length >= 6 ? true : false);
-   const isSamePword = () => setForm({...form, confirmErr: form.confirmPword != form.pword ? 'Passwords don\'t match' : ''})//setSamePword(samePword == pword ? true : false);
+   const validatePassword = () => setForm({...form, pwordErr: form.pword.length < 6 ? 'Passwords need to be at minimum 6 characters.' : ''});
+   const isSamePword = () => setForm({...form, confirmErr: form.confirmPword != form.pword ? 'Passwords don\'t match' : ''});
    const checkEmail = () => setForm({...form, emailErr: form.email.length == 0 ? 'Email is required' : ''});
    const isFormValid = () => form.emailErr == '' && form.pwordErr == '' && form.confirmErr == '';
 
@@ -31,9 +31,10 @@ export default function Signup() {
    };
 
    async function EmailPasswordSignin(args) {
-      debugger
+      if (!isFormValid()) return;
+
       auth()
-         .createUserWithEmailAndPassword(email, pword)
+         .createUserWithEmailAndPassword(form.email, form.pword)
          .then(() => {
             let meta = {
                'creationTime': Date.now(),
@@ -43,13 +44,16 @@ export default function Signup() {
          })
          .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
-               setEmailErr('That email address is already in use!');
+               setForm({...form, emailErr: 'That email address is already in use!'});
             }
             else if (error.code === 'auth/invalid-email') {
-               setEmailErr('That email address is invalid!');
+               setForm({...form, emailErr: 'That email address is invalid!'});
+            }
+            else if (error.code == 'auth/weak-password') {
+               setForm({...form, pwordErr: 'Password should be at least 6 characters'});
             }
             else
-               setEmailErr(error);
+               setForm({...form, emailErr: error.message});
          });
     }
 
