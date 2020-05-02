@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, TextInput, Text, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
@@ -7,28 +7,48 @@ import globalStyles from 'styles';
 
 export default function Signup() {
    const navigation = useNavigation();
+   const [initLoad, setInitLoad] = useState(true);
    const [form, setForm] = useState({
       firstName: '',
       lastName: '',
       email: '',
-      emailErr: '',
       pword: '',
+      confirmPword: '',
+   });
+   const [formErrs, setFormErrs] = useState({
+      emailErr: '',
       pwordErr: '',
-      confirmPwrod: '',
       confirmErr: '',
-   })
+   });
 
-   const validatePassword = () => setForm({...form, pwordErr: form.pword.length < 6 ? 'Passwords need to be at minimum 6 characters.' : ''});
-   const isSamePword = () => setForm({...form, confirmErr: form.confirmPword != form.pword ? 'Passwords don\'t match' : ''});
-   const checkEmail = () => setForm({...form, emailErr: form.email.length == 0 ? 'Email is required' : ''});
-   const isFormValid = () => form.emailErr == '' && form.pwordErr == '' && form.confirmErr == '';
+   const isFormValid = () => {
+      return formErrs.emailErr == '' && formErrs.pwordErr == '' && formErrs.confirmErr == '' &&
+             form.email.length > 0 && form.pword.length > 0;
+   }
 
    const updateField = (value, name) => {
+      if (initLoad) setInitLoad(false);
       setForm ({
          ...form,
          [name]: value
       });
    };
+
+   useEffect(
+      () => {
+         if (form.pword != form.confirmPword) setFormErrs({...formErrs, confirmErr: 'Passwords don\'t match'});
+         else setFormErrs({...formErrs, confirmErr: ''});
+      },
+      [form.pword, form.confirmPword]
+   );
+
+   useEffect(
+      () => {
+         if (!initLoad && form.email.length == 0) setFormErrs({...formErrs, emailErr: 'Email is required.'});
+         else setFormErrs({...formErrs, emailErr: ''});
+      },
+      [form.email]
+   )
 
    async function EmailPasswordSignin(args) {
       if (!isFormValid()) return;
@@ -44,16 +64,16 @@ export default function Signup() {
          })
          .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
-               setForm({...form, emailErr: 'That email address is already in use!'});
+               setFormErrs({...formErrs, emailErr: 'That email address is already in use!'});
             }
             else if (error.code === 'auth/invalid-email') {
-               setForm({...form, emailErr: 'That email address is invalid!'});
+               setFormErrs({...formErrs, emailErr: 'That email address is invalid!'});
             }
             else if (error.code == 'auth/weak-password') {
-               setForm({...form, pwordErr: 'Password should be at least 6 characters'});
+               setFormErrs({...formErrs, pwordErr: 'Password should be at least 6 characters'});
             }
             else
-               setForm({...form, emailErr: error.message});
+               setFormErrs({...formErrs, emailErr: error.message});
          });
     }
 
@@ -83,11 +103,10 @@ export default function Signup() {
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType='next'
             onChangeText={e => updateField(e, 'email')}
-            onBlur={checkEmail}
          />
-         { form.emailErr != '' &&
+         { formErrs.emailErr != '' &&
             <Text style={globalStyles.formError}>
-               {form.emailErr}
+               {formErrs.emailErr}
             </Text>
          }
          <TextInput
@@ -98,11 +117,10 @@ export default function Signup() {
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType='next'
             onChangeText={e => updateField(e, 'pword')}
-            onBlur={validatePassword}
          />
-         { form.pwordErr != '' &&
+         { formErrs.pwordErr != '' &&
             <Text style={globalStyles.formError}>
-               {form.pwordErr}
+               {formErrs.pwordErr}
             </Text>
          }
          <TextInput
@@ -113,11 +131,10 @@ export default function Signup() {
             style={[styles.login, globalStyles.input, globalStyles.whiteText, {borderWidth: 0}]}
             returnKeyType = 'next'
             onChangeText={e => updateField(e, 'confirmPword')}
-            onBlur={isSamePword}
          />
-         { form.confirmErr != '' &&
+         { formErrs.confirmErr != '' &&
             <Text style={globalStyles.formError}>
-               {form.confirmErr}
+               {formErrs.confirmErr}
             </Text>
          }
          <TouchableHighlight
