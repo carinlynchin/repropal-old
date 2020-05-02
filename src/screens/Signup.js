@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Logo from 'assets/images/logo.svg';
 import globalStyles from 'styles';
 
-export default function Signup() {
+export default function Signup(props) {
    const navigation = useNavigation();
    const [initLoad, setInitLoad] = useState(true);
    const [form, setForm] = useState({
@@ -50,17 +50,25 @@ export default function Signup() {
       [form.email]
    )
 
+   const makeFirstUppercase = (word) => word.replace(/^\w/, (c) => c.toUpperCase());
+
    async function EmailPasswordSignin(args) {
       if (!isFormValid()) return;
 
       auth()
          .createUserWithEmailAndPassword(form.email, form.pword)
-         .then(() => {
-            let meta = {
-               'creationTime': Date.now(),
-               //'displayName':
-            }
-            navigation.navigate('Home');
+         .then((userCreds) => {
+            userCreds.user.updateProfile({ displayName: makeFirstUppercase(form.firstName) })
+               .then(() => {
+                  auth().currentUser.reload().then(() => props.route.params.onAuthStateChanged(auth().currentUser) )
+                  // send email
+                  userCreds.user.sendEmailVerification({handleCodeInApp: true, url: 'https://repropal-39eb6.firebaseapp.com/__/auth/action'})
+                     .then(() => {
+                        // TODO: show message requesting them to verify email
+                        // TODO: add to user table
+                        navigation.navigate('Home');
+                     });
+               });
          })
          .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
