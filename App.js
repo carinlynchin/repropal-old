@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from 'screens/Login';
@@ -19,26 +20,18 @@ export default function App() {
    }
 
    useEffect(() => {
-      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-      return subscriber; // unsubscribe on unmount
+      const unsubscribe = auth().onAuthStateChanged(onAuthStateChanged);
+      return unsubscribe; // unsubscribe on unmount
    }, []);
 
    if (initializing) return null;
 
-   // if (!user) {
-   //   return (
-   //     <View>
-   //       <Text>Login</Text>
-   //     </View>
-   //   );
-   // }
-
-   function HomeScreen() {
+   function HomeScreen({ navigation, route }) {
       if (!user)
-         return <Login/>
+         return <Login msg={route.params && route.params.msg}/>
       else
          return <View>
-                  <Text>Welcome {user.displayName}</Text>
+                  <Text>Welcome {user.displayName} : You are {user.emailVerified ? 'verified' : 'not verified'}</Text>
                 </View>
    }
 
@@ -46,7 +39,7 @@ export default function App() {
       <NavigationContainer>
          <Stack.Navigator initialRouteName="Home" headerMode='none'>
             <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Signup" component={Signup} initialParams={{ onAuthStateChanged: onAuthStateChanged }}/>
+            <Stack.Screen name="Signup" component={Signup} />
          </Stack.Navigator>
       </NavigationContainer>
    );

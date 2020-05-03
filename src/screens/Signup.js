@@ -1,12 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { View, TextInput, Text, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { useNavigation } from '@react-navigation/native';
 import Logo from 'assets/images/logo.svg';
 import globalStyles from 'styles';
 
-export default function Signup(props) {
-   const navigation = useNavigation();
+export default function Signup({navigation, route}) {
    const [initLoad, setInitLoad] = useState(true);
    const [form, setForm] = useState({
       firstName: '',
@@ -60,13 +58,18 @@ export default function Signup(props) {
          .then((userCreds) => {
             userCreds.user.updateProfile({ displayName: makeFirstUppercase(form.firstName) })
                .then(() => {
-                  auth().currentUser.reload().then(() => props.route.params.onAuthStateChanged(auth().currentUser) )
-                  // send email
-                  userCreds.user.sendEmailVerification({handleCodeInApp: true, url: 'https://repropal-39eb6.firebaseapp.com/__/auth/action'})
+                  userCreds.user.sendEmailVerification({
+                        url: 'https://repropal-39eb6.firebaseapp.com/__/auth/action',
+                        android: {
+                           installApp: true,
+                           packageName: 'com.repropal',
+                        }
+                     })
                      .then(() => {
+                        auth().signOut();
                         // TODO: show message requesting them to verify email
                         // TODO: add to user table
-                        navigation.navigate('Home');
+                        navigation.navigate('Home', {msg: 'Please verify your email then log back in.'});
                      });
                });
          })

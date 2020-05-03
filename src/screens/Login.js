@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 import globalStyles from 'styles';
 
-export default function Login() {
+export default function Login(props) {
    GoogleSignin.configure({
      webClientId: '446696784601-mjsfh7q4c5su56op12qouvqcerooodof.apps.googleusercontent.com', // From Firebase Console Settings
    });
@@ -22,6 +22,7 @@ export default function Login() {
    const navigation=useNavigation();
 
    React.useEffect(() => {
+      if (props.msg) return;
       Animated.timing(slideAnim, {
          toValue: 0,
          ...animParams,
@@ -71,6 +72,11 @@ export default function Login() {
         <Animated.View style={{transform: [{ translateY: slideAnim }]}}>
             <Logo/>
             <Animated.View style={{opacity: fadeAnim}}>
+               { props.msg &&
+                  <Text style={styles.msg}>
+                     { props.msg }
+                  </Text>
+               }
                 <TextInput
                     underlineColorAndroid="transparent"
                     placeholder='Email'
@@ -103,22 +109,24 @@ export default function Login() {
                 <TouchableOpacity activeOpacity={0.6}>
                     <Text style={styles.link} onPress={() => navigation.navigate('Signup')}>Create an account with Email</Text>
                 </TouchableOpacity>
-                <View style={globalStyles.socialLogin}>
-                   <TouchableOpacity
-                     style={[globalStyles.facebookBtn, globalStyles.socialBtn]}
-                     onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!'))}
-                   >
-                     <FontAwesomeIcon icon={faFacebook} style={[globalStyles.icon, globalStyles.whiteText]} size={ 25 } />
-                     <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Sign in</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity
-                     style={[globalStyles.googleBtn, globalStyles.socialBtn]}
-                     onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
-                   >
-                     <GoogleIcon style={[globalStyles.icon, globalStyles.whiteText]} />
-                     <Text style={[{fontFamily: 'Roboto-Medium', color: '#757575'}, globalStyles.fs20]}>Sign in</Text>
-                   </TouchableOpacity>
-                </View>
+                { !props.msg &&
+                   <View style={globalStyles.socialLogin}>
+                      <TouchableOpacity
+                        style={[globalStyles.facebookBtn, globalStyles.socialBtn]}
+                        onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!'))}
+                      >
+                        <FontAwesomeIcon icon={faFacebook} style={[globalStyles.icon, globalStyles.whiteText]} size={ 25 } />
+                        <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Sign in</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[globalStyles.googleBtn, globalStyles.socialBtn]}
+                        onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+                      >
+                        <GoogleIcon style={[globalStyles.icon, globalStyles.whiteText]} />
+                        <Text style={[{fontFamily: 'Roboto-Medium', color: '#757575'}, globalStyles.fs20]}>Sign in</Text>
+                      </TouchableOpacity>
+                   </View>
+                }
             </Animated.View>
         </Animated.View>
     </KeyboardAvoidingView>
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0A4267', //0B4D78
+        backgroundColor: '#06395A', //0A4267
     },
     logo: {
         width: 300
@@ -146,4 +154,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 8
     },
+    msg: {
+      backgroundColor: '#011c2e',
+      paddingHorizontal: 10,
+      paddingVertical: 20,
+      borderRadius: 5,
+      color: '#91B42A',
+      fontSize: 15,
+   }
 });

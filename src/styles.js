@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
    greenButton: {
-      backgroundColor: '#B1A92F',
+      backgroundColor: '#91B42A',
       justifyContent: 'center',
       alignItems: 'center',
       height: 50,
