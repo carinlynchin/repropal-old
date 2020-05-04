@@ -1,5 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react';
-import { KeyboardAvoidingView, View, Animated, Text, TextInput, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, View, Animated, Text, TextInput, TouchableHighlight, TouchableOpacity, StyleSheet, AppState } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
@@ -21,8 +21,7 @@ export default function Login(props) {
    const animParams={duration: 1000, delay: 1500, useNativeDriver: true}
    const navigation=useNavigation();
 
-   React.useEffect(() => {
-      if (props.msg) return;
+   useEffect(() => {
       Animated.timing(slideAnim, {
          toValue: 0,
          ...animParams,
@@ -33,6 +32,21 @@ export default function Login(props) {
           ...animParams
       }).start();
    }, [])
+
+   useEffect(() => {
+      AppState.addEventListener("change", (nextAppState) => {
+         if (nextAppState === "active") {
+            let currentUser = auth().currentUser;
+            if (auth().currentUser) {
+               if (nextAppState === "active" && currentUser.email && !currentUser.emailVerified) {
+                  //did this come from an email verify link?
+                  currentUser.reload();
+                  debugger;
+                }
+            }
+         }
+      });
+   }, []);
 
    async function onGoogleButtonPress() {
       // Get the users ID token

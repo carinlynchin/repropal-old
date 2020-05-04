@@ -66,10 +66,8 @@ export default function Signup({navigation, route}) {
                         }
                      })
                      .then(() => {
-                        auth().signOut();
-                        // TODO: show message requesting them to verify email
                         // TODO: add to user table
-                        navigation.navigate('Home', {msg: 'Please verify your email then log back in.'});
+                        navigation.navigate('Home');
                      });
                });
          })

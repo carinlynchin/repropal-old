@@ -14,25 +14,25 @@ export default function App() {
    const [user, setUser] = useState();
    const Stack = createStackNavigator();
 
-   function onAuthStateChanged(user) {
-      setUser(user);
-      if (initializing) setInitializing(false);
-   }
-
    useEffect(() => {
-      const unsubscribe = auth().onAuthStateChanged(onAuthStateChanged);
-      return unsubscribe; // unsubscribe on unmount
+      const unsubOnUserChanged = auth().onUserChanged((user) => {
+         debugger
+         setUser(user);
+         if (initializing) setInitializing(false);
+      });
+      return unsubOnUserChanged;
    }, []);
 
    if (initializing) return null;
 
    function HomeScreen({ navigation, route }) {
-      if (!user)
-         return <Login msg={route.params && route.params.msg}/>
-      else
+      if (user && user.emailVerified) {
          return <View>
-                  <Text>Welcome {user.displayName} : You are {user.emailVerified ? 'verified' : 'not verified'}</Text>
+                  <Text>Welcome {user.displayName}</Text>
                 </View>
+      }
+      else
+         return <Login {...user && !user.emailVerified && {msg: "Please verify your email then log back in."}}/>
    }
 
    return (
