@@ -9,6 +9,7 @@ import GoogleIcon from 'assets/images/google.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 import globalStyles from 'styles';
+import { COLORS } from 'assets/constants';
 
 export default function Login(props) {
    GoogleSignin.configure({
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#06395A', //0A4267
+        backgroundColor: COLORS.BASEBLUE, //'#06395A', //0A4267
     },
     logo: {
         width: 300
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 10,
       paddingVertical: 20,
       borderRadius: 5,
-      color: '#91B42A',
+      color: COLORS.BASEGREEN, //'#91B42A',
       fontSize: 15,
    }
 });

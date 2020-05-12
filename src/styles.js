@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from 'assets/constants';
 
 export default StyleSheet.create({
    greenButton: {
-      backgroundColor: '#91B42A',
+      backgroundColor: COLORS.BASEGREEN, //'#91B42A',
       justifyContent: 'center',
       alignItems: 'center',
       height: 50,
@@ -51,5 +52,8 @@ export default StyleSheet.create({
    },
    disabled: {
       opacity: 0.4,
-   }
+   },
+   tabs: {
+      color: COLORS.BASEGRAY, //"rgb(132,132,132)",
+   },
 });
