@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from 'screens/Login';
 import Signup from 'screens/Signup';
+import Home from 'screens/Home';
 
 export default function App() {
   // Set an initializing state whilst Firebase connects
@@ -16,7 +17,6 @@ export default function App() {
 
    useEffect(() => {
       const unsubOnUserChanged = auth().onUserChanged((user) => {
-         debugger
          setUser(user);
          if (initializing) setInitializing(false);
       });
@@ -26,13 +26,10 @@ export default function App() {
    if (initializing) return null;
 
    function HomeScreen({ navigation, route }) {
-      if (user && user.emailVerified) {
-         return <View>
-                  <Text>Welcome {user.displayName}</Text>
-                </View>
-      }
+      if (user && user.emailVerified)
+         return <Home />
       else
-         return <Login {...user && !user.emailVerified && {msg: "Please verify your email then log back in."}}/>
+         return <Login {...user && !user.emailVerified && {msg: "Please verify your email."}}/>
    }
 
    return (

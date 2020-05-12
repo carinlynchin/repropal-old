@@ -39,9 +39,8 @@ export default function Login(props) {
             let currentUser = auth().currentUser;
             if (auth().currentUser) {
                if (nextAppState === "active" && currentUser.email && !currentUser.emailVerified) {
-                  //did this come from an email verify link?
+                  //did this come from an email verify link? If so, we need to reload to get email verification.
                   currentUser.reload();
-                  debugger;
                 }
             }
          }
