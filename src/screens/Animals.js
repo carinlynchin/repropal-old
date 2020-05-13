@@ -1,14 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StatusBar, TouchableHighlight } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { COLORS } from 'assets/constants';
 import AnimalsIcon from 'images/comboanimals.svg';
 import globalStyles from 'styles';
+import NewAnimal from 'screens/NewAnimal';
 
-export default function Animals () {
+export default function Animals(props) {
    const [myAnimals, setMyAnimals] = useState([]);
 
    const AnimalsStack = createStackNavigator();
+   const stackOptions = {
+      headerStyle: {
+         backgroundColor: COLORS.BASEGREEN,
+         height: 40,
+      },
+      headerTitleContainerStyle: {
+         paddingBottom: 5,
+      },
+      headerTitleStyle: {
+         color: 'white',
+      }
+   };
 
    function AnimalsList() {
       return (
@@ -20,21 +33,13 @@ export default function Animals () {
                   <Text style={{color: COLORS.BASEGRAY}}>You have no animals listed. Add some now: </Text>
                   <TouchableHighlight
                       style={[globalStyles.greenButton, {marginTop: 20, width: 100}]}
-                      underlayColor={'hsl(56, 45%, 55%)'}
-                      onPress={() => auth().signInWithEmailAndPassword(email, pword)}
+                      underlayColor={COLORS.PRESSGREEN}
+                      onPress={() => props.navigation.navigate('NewAnimal')}
                   >
                       <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Add</Text>
                   </TouchableHighlight>
                </View>
             }
-         </View>
-      )
-   }
-
-   function AddAnimal() {
-      return (
-         <View>
-            <Text>Welcome to the ADDING an animal page!!!</Text>
          </View>
       )
    }
@@ -46,19 +51,17 @@ export default function Animals () {
             component={AnimalsList}
             options={{
                title: 'My Animals',
-               headerStyle: {
-                  backgroundColor: COLORS.BASEGREEN,
-                  height: 40,
-               },
-               headerTitleContainerStyle: {
-                  paddingBottom: 5,
-               },
-               headerTitleStyle: {
-                  color: 'white',
-               }
+               ...stackOptions
             }}
          />
-         <AnimalsStack.Screen name="AddAnimal" component={AddAnimal} />
+         <AnimalsStack.Screen
+            name="NewAnimal"
+            component={NewAnimal}
+            options={{
+               title: 'Enter new animal',
+               ...stackOptions
+            }}
+         />
       </AnimalsStack.Navigator>
    )
 }

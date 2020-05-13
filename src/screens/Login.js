@@ -115,7 +115,7 @@ export default function Login(props) {
                 />
                 <TouchableHighlight
                     style={[styles.login, globalStyles.greenButton]}
-                    underlayColor={'hsl(56, 45%, 55%)'}
+                    underlayColor={COLORS.PRESSGREEN}
                     onPress={() => auth().signInWithEmailAndPassword(email, pword)}
                 >
                     <Text style={[globalStyles.whiteText, globalStyles.fs20]}>Login</Text>
