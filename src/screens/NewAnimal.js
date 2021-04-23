@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, FlatList, Text, StatusBar, TouchableHighlight, StyleSheet } from 'react-native';
+import { View, FlatList, Text, TouchableHighlight, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { COLORS } from 'assets/constants';
 import Cow from 'images/cow-solid.svg';
 import Cat from 'images/cat-solid.svg';
 import Horse from 'images/horse-solid.svg';
 import Dog from 'images/dog-solid.svg';
+import PhotoUpload from 'components/PhotoUpload';
 
 export default function NewAnimal () {
    const [selectedAnimal, setSelectedAnimal] = useState();
@@ -50,15 +51,14 @@ export default function NewAnimal () {
                }, null)
             )}
             extraData={selectedAnimal}
-         >
-
-         </FlatList>
+         />
+         <PhotoUpload />
       </View>
    );
 }
 
 const styles = StyleSheet.create({
    pickAnimal: {
-      paddingHorizontal: 20,
+      marginHorizontal: 50,
    },
 })

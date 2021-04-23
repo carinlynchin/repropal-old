@@ -9,6 +9,7 @@ module.exports = {
           'assets': './src/assets',
           'screens': './src/screens',
           'images': './src/assets/images',
+          'components': './src/components',
         }
       }
     ],

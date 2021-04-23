@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin } from '@react-native-community/google-signin';
-import Logo from 'assets/images/logo.svg';
-import GoogleIcon from 'assets/images/google.svg';
+import Logo from 'images/logo.svg';
+import GoogleIcon from 'images/google.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 import globalStyles from 'styles';
